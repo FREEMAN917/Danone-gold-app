@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>Danone Golde • EL OUTDI MOHAMED</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #f3f4f6; }
+    .gold-text {
+      background: linear-gradient(135deg, #fbbf24 0%, #b8860b 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+    }
+    .title-glow { animation: glow 2s ease-in-out infinite; }
+    @keyframes glow {
+      0%,100% { text-shadow: 0 0 10px #fbbf24, 0 0 20px #d4a017; }
+      50% { text-shadow: 0 0 20px #fbbf24, 0 0 40px #d4a017; }
+    }
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 1rem;
+    }
+    @media (max-width: 640px) {
+      .product-grid { grid-template-columns: 1fr; }
+    }
+    .card-hover {
+      transition: all 0.3s ease;
+      background: linear-gradient(145deg, #1a1a1a, #111111);
+    }
+    .card-hover:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 25px -5px rgba(251, 191, 36, 0.5), 0 8px 10px -6px rgba(251, 191, 36, 0.3);
+      border-color: #fbbf24;
+    }
+  </style>
+</head>
+<body class="bg-[#0a0a0a] text-gray-100">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    // -------------------- DONNÉES CONFIGURABLES --------------------
+    const APP_DATA = {
+      // 👇 Nom du créateur et téléphone corrigé (format international)
+      vendorName: "EL OUTDI MOHAMED",
+      vendorPhone: "+212 766848179",      // Affiché
+      vendorPhoneRaw: "212766848179",     // Pour WhatsApp (sans +)
+      
+      // Génération de 100 produits réalistes
+      generateProducts: () => {
+        const categories = [
+          "Yaourts nature", "Yaourts aux fruits", "Yaourts à boire", 
+          "Actimel", "Danette", "Danonino", "Activia", "Velouté", 
+          "Fromages frais", "Desserts gourmands", "Spécialités"
+        ];
+        const flavors = {
+          "Yaourts nature": ["Nature", "Nature sucré", "Nature brassé", "Nature 0%", "Bio nature"],
+          "Yaourts aux fruits": ["Fraise", "Framboise", "Abricot", "Pêche", "Fruits rouges", "Mangue", "Fruits exotiques", "Cerise"],
+          "Yaourts à boire": ["Fraise", "Vanille", "Mixte", "Pêche", "Multifruits"],
+          "Actimel": ["Classique", "Fraise", "Vanille", "Myrtille", "0%", "Vitamines"],
+          "Danette": ["Chocolat", "Vanille", "Caramel", "Chocolat noir", "Chocolat blanc", "Pistache", "Café", "Noisette"],
+          "Danonino": ["Fraise", "Framboise", "Banane", "Poire", "Multifruits"],
+          "Activia": ["Nature", "Fraise", "Pruneau", "Ananas", "Citron", "Muesli"],
+          "Velouté": ["Fraise", "Framboise", "Pêche", "Abricot", "Fruits des bois"],
+          "Fromages frais": ["Nature", "Ail & fines herbes", "Poivre", "Chèvre", "Breton"],
+          "Desserts gourmands": ["Crème brûlée", "Mousse au chocolat", "Riz au lait", "Semoule", "Liégeois"],
+          "Spécialités": ["Gervita", "Taillefine", "Jockey", "Petit Gervais"]
+        };
+        let products = [];
+        let id = 1;
+        categories.forEach(cat => {
+          const catFlavors = flavors[cat] || ["Original"];
+          catFlavors.forEach(flavor => {
+            let count = cat === "Yaourts nature" ? 3 : 
+                        cat === "Danette" ? 4 : 
+                        cat === "Actimel" ? 3 : 2;
+            for (let i = 0; i < count; i++) {
+              if (id > 100) break;
+              let name = `${cat} ${flavor}`;
+              if (i > 0) name += ` - lot ${i+1}`;
+              let price = (Math.random() * 3 + 0.8).toFixed(2);
+              products.push({
+                id: id++,
+                name: name.substring(0, 30),
+                price: parseFloat(price),
+                category: cat,
+                // Pour utiliser de vraies images WebP, remplacez par "images/produit-"+id+".webp"
+                image: `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Crect width='200' height='200' fill='%23333'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23fbbf24' font-size='18' font-family='Arial'%3E${encodeURIComponent(name.substring(0, 20))}%3C/text%3E%3C/svg%3E`
+              });
+              if (id > 100) break;
+            }
+          });
+        });
+        // Personnalisation de quelques produits
+        products[2] = {
+          id: 3,
+          name: "Danette Chocolat",
+          price: 2.80,
+          category: "Danette",
+          image: "../images/Danette chocolat.webp"
+        };
+        products[5] = {
+          id: 6,
+          name: "Velouté Fruité Fraise",
+          price: 2.95,
+          category: "Velouté",
+          image: "../images/Velouté Fruité Fraise.webp"
+        };
+        return products.slice(0, 100);
+      }
+    };
+
+    const allProducts = APP_DATA.generateProducts();
+
+    // -------------------- COMPOSANTS --------------------
+    const ProductCard = ({ product, onAddToCart }) => {
+      return (
+        <div className="bg-[#1a1a1a] rounded-xl p-3 flex flex-col items-center border border-yellow-600/20 card-hover group">
+          <img
+            src={product.image}
+            alt={product.name}
+            className="w-39 h-39 object-contain rounded-lg bg-[#0a0a0a] p-2 group-hover:scale-105 transition-transform"
+            onError={(e) => e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Crect width='80' height='80' fill='%23333'/%3E%3Ctext x='50%25' y='50%25' fill='%23fbbf24' font-size='14' text-anchor='middle'%3E?%3C/text%3E%3C/svg%3E"}
+          />
+          <h3 className="font-semibold text-sm text-center text-white group-hover:text-yellow-300 mt-2">{product.name}</h3>
+          <p className="text-yellow-500 font-bold text-sm">{product.price.toFixed(2)} DH</p>
+          <button
+            onClick={() => onAddToCart(product)}
+            className="mt-2 w-full py-2 bg-yellow-500/20 border border-yellow-500 text-yellow-300 rounded-lg text-sm hover:bg-yellow-500/30 transition"
+          >
+            Ajouter
+          </button>
+        </div>
+      );
+    };
+
+    const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
+      return (
+        <div className="flex items-center justify-between gap-2 py-2 border-b border-yellow-600/20">
+          <div className="flex-1">
+            <p className="text-sm font-medium text-white truncate">{item.name}</p>
+            <p className="text-xs text-yellow-300">{item.price.toFixed(2)} DH</p>
+          </div>
+          <div className="flex items-center gap-1">
+            <input
+              type="number"
+              min="1"
+              value={item.quantity}
+              onChange={(e) => onUpdateQuantity(item.id, parseInt(e.target.value) || 1)}
+              className="w-14 px-1 py-1 bg-[#2a2a2a] border border-yellow-600/30 rounded text-white text-xs text-center"
+            />
+            <button onClick={() => onRemove(item.id)} className="text-red-400 text-xs px-2">✕</button>
+          </div>
+        </div>
+      );
+    };
+
+    const OrderForm = ({ customerInfo, setCustomerInfo }) => {
+      const handleChange = (e) => {
+        const { name, value } = e.target;
+        setCustomerInfo(prev => ({ ...prev, [name]: value }));
+      };
+
+      return (
+        <div className="bg-[#1a1a1a] p-4 rounded-xl border border-yellow-600/20 space-y-3">
+          <h2 className="text-xl font-bold gold-text">Vos infos</h2>
+          <input
+            type="text"
+            name="name"
+            value={customerInfo.name}
+            onChange={handleChange}
+            placeholder="Nom complet"
+            className="w-full px-3 py-2 bg-[#2a2a2a] border border-yellow-600/30 rounded-lg text-white placeholder-gray-500 focus:border-yellow-500"
+          />
+          <input
+            type="text"
+            name="location"
+            value={customerInfo.location}
+            onChange={handleChange}
+            placeholder="Localisation (adresse/ville)"
+            className="w-full px-3 py-2 bg-[#2a2a2a] border border-yellow-600/30 rounded-lg text-white placeholder-gray-500 focus:border-yellow-500"
+          />
+        </div>
+      );
+    };
+
+    const ComplaintSection = () => {
+      const [complaint, setComplaint] = React.useState('');
+      const handleSend = () => {
+        if (!complaint.trim()) return alert('Veuillez écrire votre réclamation.');
+        const msg = `🗣 *RÉCLAMATION DANONE GOLDE*\n\n${complaint}`;
+        window.open(`https://wa.me/${APP_DATA.vendorPhoneRaw}?text=${encodeURIComponent(msg)}`, '_blank');
+        setComplaint('');
+      };
+      return (
+        <div className="bg-[#1a1a1a] p-4 rounded-xl border border-yellow-600/20 mt-6">
+          <h2 className="text-xl font-bold gold-text">📢 Réclamation</h2>
+          <textarea
+            rows="2"
+            value={complaint}
+            onChange={(e) => setComplaint(e.target.value)}
+            placeholder="Votre message..."
+            className="w-full mt-2 px-3 py-2 bg-[#2a2a2a] border border-yellow-600/30 rounded-lg text-white"
+          />
+          <button onClick={handleSend} className="mt-2 w-full py-2 bg-yellow-500/20 border border-yellow-500 text-yellow-300 rounded-lg">
+            Envoyer la réclamation
+          </button>
+        </div>
+      );
+    };
+
+    const App = () => {
+      // État client
+      const [customerInfo, setCustomerInfo] = React.useState(() => {
+        const saved = localStorage.getItem('danone_customer');
+        return saved ? JSON.parse(saved) : { name: '', location: '' };
+      });
+      React.useEffect(() => {
+        localStorage.setItem('danone_customer', JSON.stringify(customerInfo));
+      }, [customerInfo]);
+
+      // État panier
+      const [cart, setCart] = React.useState(new Map());
+      const [lastAdded, setLastAdded] = React.useState(null);
+      const cartRef = React.useRef(null);
+
+      // Filtres
+      const [search, setSearch] = React.useState('');
+      const [selectedCategory, setSelectedCategory] = React.useState('Toutes');
+
+      const addToCart = (product) => {
+        setCart(prev => {
+          const newCart = new Map(prev);
+          if (newCart.has(product.id)) {
+            const item = newCart.get(product.id);
+            newCart.set(product.id, { ...item, quantity: item.quantity + 1 });
+          } else {
+            newCart.set(product.id, { ...product, quantity: 1 });
+          }
+          return newCart;
+        });
+        setLastAdded(product.id);
+      };
+
+      const updateQuantity = (id, quantity) => {
+        setCart(prev => {
+          const newCart = new Map(prev);
+          if (quantity <= 0) {
+            newCart.delete(id);
+          } else {
+            const item = newCart.get(id);
+            newCart.set(id, { ...item, quantity });
+          }
+          return newCart;
+        });
+      };
+
+      const removeFromCart = (id) => {
+        setCart(prev => {
+          const newCart = new Map(prev);
+          newCart.delete(id);
+          return newCart;
+        });
+      };
+
+      const clearCart = () => setCart(new Map());
+
+      const cartTotal = Array.from(cart.values()).reduce((acc, item) => acc + item.price * item.quantity, 0);
+
+      React.useEffect(() => {
+        if (lastAdded && cart.size > 0 && cartRef.current) {
+          cartRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          setLastAdded(null);
+        }
+      }, [lastAdded, cart.size]);
+
+      const filteredProducts = allProducts.filter(p => {
+        const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase());
+        const matchesCategory = selectedCategory === 'Toutes' || p.category === selectedCategory;
+        return matchesSearch && matchesCategory;
+      });
+
+      const categories = ['Toutes', ...new Set(allProducts.map(p => p.category))];
+
+      const generateOrderText = () => {
+        if (cart.size === 0) return null;
+        const lines = [
+          `🥛 *DANONE GOLDE - COMMANDE* 🥛\n`,
+          `👤 *Client* : ${customerInfo.name || 'Non renseigné'}`,
+          `📍 *Localisation* : ${customerInfo.location || 'Non renseignée'}\n`
+        ];
+        Array.from(cart.values()).forEach(item => {
+          lines.push(`• ${item.name} : ${item.quantity} x ${item.price.toFixed(2)}DH = ${(item.quantity * item.price).toFixed(2)}DH`);
+        });
+        lines.push(`\n💰 *TOTAL* : ${cartTotal.toFixed(2)}DH`);
+        lines.push(`\nMerci de confirmer.`);
+        return lines.join('\n');
+      };
+
+      const sendOrder = () => {
+        const text = generateOrderText();
+        if (!text) return alert('Panier vide.');
+        window.open(`https://wa.me/${APP_DATA.vendorPhoneRaw}?text=${encodeURIComponent(text)}`, '_blank');
+      };
+
+      return (
+        <div className="min-h-screen bg-[#0a0a0a] text-white">
+          <div className="container mx-auto px-3 py-4 max-w-7xl">
+            {/* Header avec logo */}
+            <header className="text-center mb-6">
+              <div className="flex justify-center mb-3">
+                 <img
+                    src="images/logo.webp"        // Chemin vers votre logo (à placer dans le dossier images/)
+                    alt="Danone Gold Logo"
+                    className="w-24 h-24 rounded-full object-cover shadow-lg border-2 border-yellow-300"
+                    onError={(e) => {
+                   e.target.onerror = null; // Évite une boucle infinie
+                         e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Crect width='96' height='96' fill='%23333'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23fbbf24' font-size='24' font-family='Arial'%3EDG%3C/text%3E%3C/svg%3E";
+                          }}
+                  />
+                
+              </div>
+              <h1 className="text-4xl md:text-5xl font-black gold-text title-glow">DANONE GOLDE</h1>
+              <p className="text-yellow-300/80 text-base mt-1">
+                Créé par <span className="font-bold">{APP_DATA.vendorName}</span> • {APP_DATA.vendorPhone}
+              </p>
+            </header>
+
+            {/* Barre recherche et filtres */}
+            <div className="flex flex-col md:flex-row gap-3 mb-4">
+              <input
+                type="text"
+                placeholder="Rechercher un produit..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="flex-1 px-4 py-2 bg-[#1a1a1a] border border-yellow-600/30 rounded-lg text-white placeholder-gray-500 focus:border-yellow-500"
+              />
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="px-4 py-2 bg-[#1a1a1a] border border-yellow-600/30 rounded-lg text-white focus:border-yellow-500"
+              >
+                {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+              </select>
+            </div>
+
+            {/* Grille produits et panier */}
+            <div className="lg:flex lg:gap-6">
+              <div className="lg:flex-1">
+                <div className="product-grid">
+                  {filteredProducts.map(product => (
+                    <ProductCard key={product.id} product={product} onAddToCart={addToCart} />
+                  ))}
+                </div>
+              </div>
+
+              {cart.size > 0 && (
+                <div className="lg:w-80 mt-6 lg:mt-0" ref={cartRef}>
+                  <div className="bg-[#1a1a1a] p-4 rounded-xl border border-yellow-600/20 sticky top-4">
+                    <h2 className="text-xl font-bold gold-text flex justify-between">
+                      Panier <span className="text-sm text-yellow-300">{cart.size} article(s)</span>
+                    </h2>
+                    <div className="max-h-80 overflow-y-auto my-3 pr-1">
+                      {Array.from(cart.values()).map(item => (
+                        <CartItem
+                          key={item.id}
+                          item={item}
+                          onUpdateQuantity={updateQuantity}
+                          onRemove={removeFromCart}
+                        />
+                      ))}
+                    </div>
+                    <div className="border-t border-yellow-600/20 pt-2">
+                      <div className="flex justify-between font-bold text-lg">
+                        <span>Total</span>
+                        <span className="gold-text">{cartTotal.toFixed(2)} DH</span>
+                      </div>
+                      <button
+                        onClick={clearCart}
+                        className="w-full mt-2 py-2 bg-gray-700 text-gray-300 rounded-lg text-sm hover:bg-gray-600"
+                      >
+                        Vider le panier
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Formulaire client et envoi */}
+            <div className="mt-6 grid md:grid-cols-2 gap-6">
+              <OrderForm customerInfo={customerInfo} setCustomerInfo={setCustomerInfo} />
+              <div className="bg-[#1a1a1a] p-4 rounded-xl border border-yellow-600/20 flex flex-col justify-center">
+                <button
+                  onClick={sendOrder}
+                  className="w-full py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-gray-900 font-bold rounded-lg shadow-lg hover:shadow-yellow-500/50 transition transform hover:scale-[1.02]"
+                >
+                  📲 Envoyer la commande WhatsApp
+                </button>
+              </div>
+            </div>
+
+            {/* Section réclamation */}
+            <ComplaintSection />
+
+            {/* Footer avec créateur et numéro */}
+            <footer className="mt-8 text-center text-yellow-700/70 text-xs border-t border-yellow-600/20 pt-4">
+              <p>Application sophistiquée • Plus de 100 produits • Panier automatique</p>
+              <p className="mt-2 text-yellow-500/90">
+                Créé par <span className="font-semibold">{APP_DATA.vendorName}</span> • Tél : {APP_DATA.vendorPhone}
+              </p>
+            </footer>
+          </div>
+        </div>
+      );
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+
+    // Enregistrement du service worker pour PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(err => console.log('SW non enregistré', err));
+      });
+    }
+  </script>
+</body>
+</html>
